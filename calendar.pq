@@ -34,13 +34,18 @@ let
     if [Number of Holidays] = 0 and [Number of Weekdays] = 1 then 1
     else 0
   ),
-  #"Changed Type" = Table.TransformColumnTypes(#"Add Num Bus Days",{
+  #"Add Is Month End" = Table.AddColumn(#"Add Num Bus Days", "Is Month End?", each
+    if [Date] = Date.EndOfMonth([Date]) then true
+    else false
+  ),
+  #"Changed Type" = Table.TransformColumnTypes(#"Add Is Month End",{
     {"Month End", type date},
     {"Month (Int)", Int64.Type},
     {"Year", Int64.Type},
     {"Number of Holidays", Int64.Type},
     {"Number of Business Days", Int64.Type},
-    {"Number of Weekdays", Int64.Type}
+    {"Number of Weekdays", Int64.Type},
+    {"Is Month End?", type logical}
   })
 in
   #"Changed Type"
