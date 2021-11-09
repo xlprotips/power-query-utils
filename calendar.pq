@@ -26,19 +26,21 @@ let
   ),
   #"Add Holiday Name" = Table.AddColumn(#"Add Num Holidays", "Holiday Name", each if [Standard.Holiday Name] = null then [Custom Holiday.Name] else [Standard.Holiday Name]),
   #"Remove Old Holiday Columns" = Table.RemoveColumns(#"Add Holiday Name",{"Standard.Holiday Name", "Custom Holiday.Name", "Known Holidays.Observed?"}),
-  #"Add Num Bus Days" = Table.AddColumn(#"Remove Old Holiday Columns", "Number of Business Days", each
-    let
-      dow = Date.DayOfWeek([Date], Day.Sunday)
-    in
-      if [Number of Holidays] = 1 or dow = 0 or dow = 6 then 0
-      else 1
+  #"Add Num Weekdays" = Table.AddColumn(#"Remove Old Holiday Columns", "Number of Weekdays", each
+    let dow = Date.DayOfWeek([Date], Day.Sunday)
+    in if dow = 0 or dow = 6 then 0 else 1
+  ),
+  #"Add Num Bus Days" = Table.AddColumn(#"Add Num Weekdays", "Number of Business Days", each
+    if [Number of Holidays] = 0 and [Number of Weekdays] = 1 then 1
+    else 0
   ),
   #"Changed Type" = Table.TransformColumnTypes(#"Add Num Bus Days",{
     {"Month End", type date},
     {"Month (Int)", Int64.Type},
     {"Year", Int64.Type},
     {"Number of Holidays", Int64.Type},
-    {"Number of Business Days", Int64.Type}
+    {"Number of Business Days", Int64.Type},
+    {"Number of Weekdays", Int64.Type}
   })
 in
   #"Changed Type"
