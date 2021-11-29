@@ -1,6 +1,13 @@
+// Calendar
+
+// Needs supporting queries:
+//   - Known Holidays (KnownHolidays.pq)
+//   - Additional Observed Holidays (AdditionalHolidays.pq)
+//   - Holiday Name (Holidays.pq)
+
 let
-  CalendarStart = ForecastStart,
-  CalendarEnd = Date.EndOfMonth(Date.AddMonths(ForecastStart, ForecastNumPeriods - 1)),
+  CalendarStart = #date(2021, 1, 1),
+  CalendarEnd = Date.EndOfYear(CalendarStart),
   Periods = List.Generate(
     () => CalendarStart,
     each _ <= CalendarEnd,
